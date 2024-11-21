@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="ocppConfigApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCPP Configuration Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/node_modules/angular-material/angular-material.min.css">
+    <link rel="stylesheet" href="/node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body ng-controller="ConfigController as ctrl" class="mat-typography">
+    <div class="app-container">
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-content">
+                    <h2>
+                        <i class="fas fa-cogs"></i>
+                        {{ctrl.translations.title}}
+                    </h2>
+                    <md-button class="md-fab md-mini md-primary" ng-click="ctrl.getConfiguration()" aria-label="Refresh">
+                        <i class="fas fa-sync-alt" ng-class="{'fa-spin': ctrl.loading}"></i>
+                    </md-button>
+                </div>
+                <div class="search-bar">
+                    <div class="search-input">
+                        <i class="fas fa-search"></i>
+                        <input type="text" 
+                               ng-model="ctrl.searchText" 
+                               ng-model-options="{ debounce: 300 }"
+                               placeholder="{{ctrl.translations.search}}">
+                    </div>
+                    <md-select ng-model="ctrl.selectedGroup" 
+                             placeholder="{{ctrl.translations.allCategories}}" 
+                             class="group-filter">
+                        <md-option value="all">{{ctrl.translations.allCategories}}</md-option>
+                        <md-option ng-repeat="group in ctrl.groups" value="{{group.id}}">
+                            <i class="fas {{group.icon}}"></i>
+                            {{group.label}}
+                        </md-option>
+                    </md-select>
+                </div>
+            </header>
+
+            <div class="config-grid">
+                <config-card ng-repeat="config in ctrl.getFilteredConfigs() track by config.key"
+                           config="config"
+                           on-edit="ctrl.selectConfig(config)">
+                </config-card>
+            </div>
+
+            <config-editor ng-if="ctrl.selectedConfig"
+                         config="ctrl.selectedConfig"
+                         on-save="ctrl.handleSave(key, value)"
+                         on-cancel="ctrl.handleCancel()">
+            </config-editor>
+        </main>
+    </div>
+
+    <script src="/node_modules/angular/angular.min.js"></script>
+    <script src="/node_modules/angular-animate/angular-animate.min.js"></script>
+    <script src="/node_modules/angular-aria/angular-aria.min.js"></script>
+    <script src="/node_modules/angular-material/angular-material.min.js"></script>
+    <script src="/node_modules/angular-messages/angular-messages.min.js"></script>
+    <script src="/src/app.js"></script>
+    <script src="/src/services/translationService.js"></script>
+    <script src="/src/services/configurationMapper.js"></script>
+    <script src="/src/services/ocppService.js"></script>
+    <script src="/src/components/configCard.component.js"></script>
+    <script src="/src/components/configEditor.component.js"></script>
+    <script src="/src/controllers/configController.js"></script>
+</body>
+</html>
